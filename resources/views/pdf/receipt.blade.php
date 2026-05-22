@@ -5,255 +5,299 @@
     <title>Kwitansi {{ $receipt->receipt_number }}</title>
     <style>
         @page {
-            margin: 10mm 10mm;
+            margin: 8mm;
             size: 210mm 148mm; /* A5 Landscape */
         }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Times New Roman', Times, serif;
-            font-size: 10pt;
+            font-size: 11pt;
             color: #000;
-            line-height: 1.3;
+            line-height: 1.4;
         }
-        
-        .receipt-container {
+
+        .kwitansi {
             border: 3px double #000;
-            padding: 10px 15px;
+            padding: 8mm 10mm;
             position: relative;
-            height: 100%; /* Changed from min-height: 100% to avoid overflow issues */
+            height: 100%;
         }
-        
-        /* Header */
-        .header {
-            display: table;
-            width: 100%;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #000;
-            padding-bottom: 10px;
-        }
-        
-        .header-left {
-            display: table-cell;
-            width: 70%;
-            vertical-align: middle;
-        }
-        
-        .header-right {
-            display: table-cell;
-            width: 30%;
-            text-align: right;
-            vertical-align: middle;
-        }
-        
-        .company-name {
-            font-size: 16pt;
-            font-weight: bold;
-            text-transform: uppercase;
-            margin-bottom: 3px;
-        }
-        
-        .company-info {
-            font-size: 9pt;
-            color: #333;
-        }
-        
-        .receipt-title {
-            font-size: 24pt;
-            font-weight: bold;
-            letter-spacing: 3px;
-            color: #000;
-        }
-        
-        /* Receipt Number */
-        .receipt-number-box {
-            text-align: right;
-            margin-bottom: 15px;
-        }
-        
-        .receipt-number-label {
-            font-size: 10pt;
-            color: #666;
-        }
-        
-        .receipt-number {
-            font-size: 12pt;
-            font-weight: bold;
-            color: #c00;
-        }
-        
-        /* Main Content */
-        .content-row {
-            margin-bottom: 12px;
-        }
-        
-        .row-table {
-            width: 100%;
-            display: table;
-        }
-        
-        .row-label {
-            display: table-cell;
-            width: 140px;
-            font-weight: bold;
-            padding-right: 10px;
-            vertical-align: top;
-        }
-        
-        .row-colon {
-            display: table-cell;
-            width: 15px;
-            vertical-align: top;
-        }
-        
-        .row-value {
-            display: table-cell;
-            border-bottom: 1px dotted #666;
-            padding-bottom: 2px;
-        }
-        
-        /* Amount Box */
-        .amount-box {
-            background: #f5f5f5;
-            border: 2px solid #000;
-            padding: 12px 15px;
-            margin: 20px 0;
-            text-align: center;
-        }
-        
-        .amount-label {
-            font-size: 10pt;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .amount-value {
-            font-size: 24pt;
-            font-weight: bold;
-            color: #000;
-            margin: 5px 0;
-        }
-        
-        .amount-words {
-            font-size: 10pt;
-            font-style: italic;
-            color: #333;
-        }
-        
-        /* Payment Info */
-        .payment-info {
-            margin-top: 15px;
-            padding: 10px;
-            background: #fafafa;
-            border: 1px solid #ddd;
-        }
-        
-        .payment-title {
-            font-size: 9pt;
-            font-weight: bold;
-            text-transform: uppercase;
-            color: #666;
-            margin-bottom: 5px;
-        }
-        
-        /* Signature Area */
-        .signature-area {
-            display: table;
-            width: 100%;
-            margin-top: 25px;
-        }
-        
-        .signature-left {
-            display: table-cell;
-            width: 50%;
-            text-align: center;
-            vertical-align: bottom;
-        }
-        
-        .signature-right {
-            display: table-cell;
-            width: 50%;
-            text-align: center;
-            vertical-align: bottom;
-        }
-        
-        .signature-box {
-            border-bottom: 1px solid #000;
-            height: 50px;
-            margin: 0 30px 5px 30px;
-            position: relative;
-        }
-        
-        .signature-label {
-            font-size: 9pt;
-            color: #666;
-        }
-        
-        .signature-name {
-            font-size: 10pt;
-            font-weight: bold;
-            margin-top: 5px;
-        }
-        
-        .stamp-area {
-            position: absolute;
-            right: 30px;
-            bottom: -10px;
-            opacity: 0.7;
-        }
-        
-        .stamp-area img {
-            max-width: 80px;
-            max-height: 80px;
-        }
-        
-        /* Footer */
-        .footer {
-            text-align: center;
-            margin-top: 15px;
-            font-size: 8pt;
-            color: #999;
-            border-top: 1px solid #ddd;
-            padding-top: 10px;
-        }
-        
-        /* Watermark for PAID */
+
+        /* ============ WATERMARK ============ */
         .watermark {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) rotate(-30deg);
-            font-size: 60pt;
+            font-size: 54pt;
             font-weight: bold;
-            color: rgba(0, 128, 0, 0.1);
+            color: rgba(0, 128, 0, 0.08);
             text-transform: uppercase;
             letter-spacing: 10px;
             z-index: 0;
             pointer-events: none;
         }
-        
+
         .content {
             position: relative;
             z-index: 1;
+        }
+
+        /* ============ HEADER ============ */
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 4mm;
+        }
+
+        .header-table td {
+            vertical-align: middle;
+            padding: 0;
+        }
+
+        .logo-cell {
+            width: 55mm;
+        }
+
+        .logo-cell img {
+            max-height: 36px;
+            display: block;
+        }
+
+        .company-name {
+            font-size: 13pt;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .company-detail {
+            font-size: 8pt;
+            color: #333;
+            line-height: 1.3;
+        }
+
+        .title-cell {
+            text-align: right;
+            width: 70mm;
+        }
+
+        .title-kwitansi {
+            font-size: 22pt;
+            font-weight: bold;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            border-bottom: 2px solid #000;
+            padding-bottom: 2px;
+            display: inline-block;
+        }
+
+        .nomor-tanggal {
+            font-size: 9pt;
+            margin-top: 3px;
+            text-align: right;
+        }
+
+        .nomor-tanggal .nomor {
+            color: #c00;
+            font-weight: bold;
+            font-size: 10pt;
+        }
+
+        .header-line {
+            border: none;
+            border-top: 2px solid #000;
+            margin: 3mm 0;
+        }
+
+        /* ============ CONTENT ROWS ============ */
+        .field-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .field-table td {
+            padding: 2.5mm 0;
+            vertical-align: top;
+            font-size: 11pt;
+        }
+
+        .field-label {
+            width: 38mm;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .field-colon {
+            width: 5mm;
+            text-align: center;
+        }
+
+        .field-value {
+            border-bottom: 1px dotted #555;
+        }
+
+        .field-value-strong {
+            border-bottom: 1px dotted #555;
+            font-weight: bold;
+            font-size: 12pt;
+        }
+
+        /* ============ AMOUNT BOX ============ */
+        .amount-box {
+            border: 2px solid #000;
+            margin: 4mm 0;
+            display: table;
+            width: 100%;
+        }
+
+        .amount-box-label {
+            display: table-cell;
+            width: 38mm;
+            background: #e8e8e8;
+            border-right: 2px solid #000;
+            text-align: center;
+            vertical-align: middle;
+            font-weight: bold;
+            font-size: 11pt;
+            padding: 3mm 2mm;
+        }
+
+        .amount-box-value {
+            display: table-cell;
+            text-align: center;
+            vertical-align: middle;
+            padding: 3mm 5mm;
+        }
+
+        .amount-number {
+            font-size: 18pt;
+            font-weight: bold;
+        }
+
+        .amount-words {
+            font-size: 9.5pt;
+            font-style: italic;
+            margin-top: 1mm;
+            color: #333;
+        }
+
+        /* ============ PAYMENT INFO ============ */
+        .payment-row {
+            font-size: 9pt;
+            color: #444;
+            margin-top: 2mm;
+            padding: 2mm 0;
+            border-top: 1px solid #ccc;
+        }
+
+        .notes-row {
+            font-size: 9pt;
+            color: #555;
+            margin-top: 1mm;
+        }
+
+        /* ============ SIGNATURE ============ */
+        .signature-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 5mm;
+        }
+
+        .signature-table td {
+            width: 50%;
+            text-align: center;
+            vertical-align: top;
+            padding: 0 15mm;
+        }
+
+        .sig-title {
+            font-size: 9pt;
+            color: #555;
+            margin-bottom: 1mm;
+        }
+
+        .sig-space {
+            height: 18mm;
+            position: relative;
+        }
+
+        .sig-line {
+            border-bottom: 1px solid #000;
+            margin: 0 5mm;
+        }
+
+        .sig-name {
+            font-size: 10pt;
+            font-weight: bold;
+            margin-top: 2mm;
+        }
+
+        .stamp-img {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            opacity: 0.75;
+            z-index: 1;
+        }
+
+        .stamp-img img {
+            max-width: 70px;
+            max-height: 70px;
+        }
+
+        .signature-img {
+            position: absolute;
+            bottom: 2mm;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+        }
+
+        .signature-img img {
+            height: 45px;
+        }
+
+        /* ============ FOOTER ============ */
+        .footer-section {
+            margin-top: 3mm;
+            border-top: 1px solid #ddd;
+            padding-top: 2mm;
+            font-size: 7.5pt;
+            color: #999;
+            display: table;
+            width: 100%;
+        }
+
+        .footer-qr {
+            display: table-cell;
+            width: 50px;
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .footer-text {
+            display: table-cell;
+            vertical-align: middle;
+            padding-left: 3mm;
         }
     </style>
 </head>
 <body>
     @php
         $tenant = $receipt->invoice->tenant;
-        
+
         // Convert amount to words (Indonesian)
         function terbilang($angka) {
             $angka = abs($angka);
             $huruf = ["", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas"];
             $temp = "";
-            
+
             if ($angka < 12) {
                 $temp = " " . $huruf[$angka];
             } elseif ($angka < 20) {
@@ -275,159 +319,157 @@
             } elseif ($angka < 1000000000000000) {
                 $temp = terbilang($angka / 1000000000000) . " Triliun" . terbilang(fmod($angka, 1000000000000));
             }
-            
+
             return $temp;
         }
-        
+
         $amountInWords = trim(terbilang(floor($receipt->amount))) . " Rupiah";
+
+        // Payment method label
+        $paymentMethodLabel = '-';
+        if ($receipt->payment) {
+            switch ($receipt->payment->payment_method) {
+                case 'cash': $paymentMethodLabel = 'Tunai'; break;
+                case 'transfer': $paymentMethodLabel = 'Transfer Bank'; break;
+                case 'check': $paymentMethodLabel = 'Cek/Giro'; break;
+                case 'qris': $paymentMethodLabel = 'QRIS'; break;
+                default: $paymentMethodLabel = ucfirst($receipt->payment->payment_method);
+            }
+        }
     @endphp
 
-    <div class="receipt-container">
-        <!-- Watermark -->
+    <div class="kwitansi">
+        {{-- Watermark --}}
         <div class="watermark">LUNAS</div>
-        
+
         <div class="content">
-            <!-- Header -->
-            <div class="header">
-                <div class="header-left">
-                    @if($tenant->logo && file_exists(public_path('storage/' . $tenant->logo)))
-                        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('storage/' . $tenant->logo))) }}" 
-                             alt="Logo" style="max-height: 50px; margin-bottom: 5px;">
-                        <div class="company-name" style="font-size: 14pt;">{{ $tenant->company_name }}</div>
-                    @else
+            {{-- ===== HEADER ===== --}}
+            <table class="header-table">
+                <tr>
+                    <td>
+                        @if($tenant->logo && file_exists(public_path('storage/' . $tenant->logo)))
+                            <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('storage/' . $tenant->logo))) }}"
+                                 alt="Logo" style="max-height: 32px; margin-bottom: 2px;">
+                        @endif
                         <div class="company-name">{{ $tenant->company_name }}</div>
-                    @endif
-                    
-                    <div class="company-info">
-                        {{ $tenant->address }}<br>
-                        {{ $tenant->city }} {{ $tenant->postal_code }}<br>
-                        Telp: {{ $tenant->phone }} | Email: {{ $tenant->email }}
-                        @if($tenant->npwp)<br>NPWP: {{ $tenant->npwp }}@endif
-                    </div>
-                </div>
-                <div class="header-right">
-                    <div class="receipt-title">KWITANSI</div>
-                </div>
-            </div>
+                        <div class="company-detail">
+                            {{ $tenant->address }}<br>
+                            {{ $tenant->city }} {{ $tenant->postal_code }}
+                            &bull; Telp: {{ $tenant->phone }}
+                            @if($tenant->npwp)<br>NPWP: {{ $tenant->npwp }}@endif
+                        </div>
+                    </td>
+                    <td class="title-cell">
+                        <div class="title-kwitansi">KWITANSI</div>
+                        <div class="nomor-tanggal">
+                            No: <span class="nomor">{{ $receipt->receipt_number }}</span><br>
+                            Tanggal: {{ $receipt->receipt_date->format('d / m / Y') }}
+                        </div>
+                    </td>
+                </tr>
+            </table>
 
-            <!-- Receipt Number & Date -->
-            <div class="receipt-number-box">
-                <span class="receipt-number-label">No. </span>
-                <span class="receipt-number">{{ $receipt->receipt_number }}</span>
-                <br>
-                <span style="font-size: 10pt;">{{ $receipt->receipt_date->format('d F Y') }}</span>
-            </div>
+            <hr class="header-line">
 
-            <!-- Content Rows -->
-            <div class="content-row">
-                <div class="row-table">
-                    <span class="row-label">Sudah Terima Dari</span>
-                    <span class="row-colon">:</span>
-                    <span class="row-value"><strong>{{ $receipt->invoice->client->name }}</strong></span>
-                </div>
-            </div>
+            {{-- ===== FIELD ROWS ===== --}}
+            <table class="field-table">
+                <tr>
+                    <td class="field-label">Sudah Terima Dari</td>
+                    <td class="field-colon">:</td>
+                    <td class="field-value-strong">{{ $receipt->invoice->client->name }}</td>
+                </tr>
+                <tr>
+                    <td class="field-label">Alamat</td>
+                    <td class="field-colon">:</td>
+                    <td class="field-value">{{ $receipt->invoice->client->address ?? '-' }}</td>
+                </tr>
+            </table>
 
-            <div class="content-row">
-                <div class="row-table">
-                    <span class="row-label">Alamat</span>
-                    <span class="row-colon">:</span>
-                    <span class="row-value">{{ $receipt->invoice->client->address ?? '-' }}</span>
-                </div>
-            </div>
-
-            <!-- Amount Box -->
+            {{-- ===== AMOUNT BOX ===== --}}
             <div class="amount-box">
-                <div class="amount-label">Uang Sejumlah</div>
-                <div class="amount-value">Rp {{ number_format($receipt->amount, 0, ',', '.') }}</div>
-                <div class="amount-words"># {{ $amountInWords }} #</div>
+                <div class="amount-box-label">Uang<br>Sejumlah</div>
+                <div class="amount-box-value">
+                    <div class="amount-number">Rp {{ number_format($receipt->amount, 0, ',', '.') }},-</div>
+                    <div class="amount-words"># {{ $amountInWords }} #</div>
+                </div>
             </div>
 
-            <div class="content-row">
-                <div class="row-table">
-                    <span class="row-label">Untuk Pembayaran</span>
-                    <span class="row-colon">:</span>
-                    <span class="row-value">
+            {{-- ===== UNTUK PEMBAYARAN ===== --}}
+            <table class="field-table">
+                <tr>
+                    <td class="field-label">Untuk Pembayaran</td>
+                    <td class="field-colon">:</td>
+                    <td class="field-value">
                         Invoice No. <strong>{{ $receipt->invoice->invoice_number }}</strong>
                         @if($receipt->invoice->subject)
-                            <br>{{ $receipt->invoice->subject }}
+                            &mdash; {{ $receipt->invoice->subject }}
                         @endif
-                    </span>
-                </div>
-            </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="field-label">Metode Bayar</td>
+                    <td class="field-colon">:</td>
+                    <td class="field-value">
+                        {{ $paymentMethodLabel }}
+                        @if($receipt->payment && $receipt->payment->reference_number)
+                            &nbsp;&bull;&nbsp; Ref: {{ $receipt->payment->reference_number }}
+                        @endif
+                    </td>
+                </tr>
+            </table>
 
-            <!-- Payment Info -->
-            @if($receipt->payment)
-            <div class="payment-info">
-                <div class="payment-title">Informasi Pembayaran</div>
-                <div style="font-size: 10pt;">
-                    Metode: 
-                    @switch($receipt->payment->payment_method)
-                        @case('cash') Tunai @break
-                        @case('transfer') Transfer Bank @break
-                        @case('check') Cek/Giro @break
-                        @case('qris') QRIS @break
-                        @default {{ ucfirst($receipt->payment->payment_method) }}
-                    @endswitch
-                    @if($receipt->payment->reference_number)
-                        &nbsp;&nbsp;|&nbsp;&nbsp; Ref: {{ $receipt->payment->reference_number }}
-                    @endif
-                </div>
-            </div>
-            @endif
-
+            {{-- ===== NOTES ===== --}}
             @if($receipt->notes)
-            <div style="margin-top: 10px; font-size: 9pt; color: #666;">
+            <div class="notes-row">
                 <strong>Catatan:</strong> {{ $receipt->notes }}
             </div>
             @endif
 
-            <!-- Signature Area -->
-            <div class="signature-area">
-                <div class="signature-left">
-                    <div class="signature-label">Penerima</div>
-                    <div class="signature-box"></div>
-                    <div class="signature-name">{{ $receipt->invoice->client->name }}</div>
-                    
-                </div>
-                <div class="signature-right">
-                    <div class="signature-label">{{ $tenant->city }}, {{ $receipt->receipt_date->format('d F Y') }}</div>
-                    <div class="signature-box" style="position: relative; height: 80px;">
-                        @if($receipt->include_stamp && $tenant->stamp_image && file_exists(public_path('storage/' . $tenant->stamp_image)))
-                            <div class="stamp-area" style="position: absolute; right: 10px; bottom: 10px; opacity: 0.8; z-index: 1;">
-                                <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('storage/' . $tenant->stamp_image))) }}" 
-                                     style="max-width: 80px; max-height: 80px;">
-                            </div>
-                        @endif
+            {{-- ===== SIGNATURE AREA ===== --}}
+            <table class="signature-table">
+                <tr>
+                    <td>
+                        <div class="sig-title">Penerima</div>
+                        <div class="sig-space"></div>
+                        <div class="sig-line"></div>
+                        <div class="sig-name">{{ $receipt->invoice->client->name }}</div>
+                    </td>
+                    <td>
+                        <div class="sig-title">{{ $tenant->city }}, {{ $receipt->receipt_date->format('d F Y') }}</div>
+                        <div class="sig-space" style="position: relative;">
+                            @if($receipt->include_stamp && $tenant->stamp_image && file_exists(public_path('storage/' . $tenant->stamp_image)))
+                                <div class="stamp-img">
+                                    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('storage/' . $tenant->stamp_image))) }}">
+                                </div>
+                            @endif
 
-                        @if($receipt->include_signature && $tenant->signature_image && file_exists(public_path('storage/' . $tenant->signature_image)))
-                            <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('storage/' . $tenant->signature_image))) }}" 
-                                 style="height: 60px; position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); z-index: 2;">
+                            @if($receipt->include_signature && $tenant->signature_image && file_exists(public_path('storage/' . $tenant->signature_image)))
+                                <div class="signature-img">
+                                    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('storage/' . $tenant->signature_image))) }}">
+                                </div>
+                            @endif
+                        </div>
+                        <div class="sig-line"></div>
+                        @if($receipt->include_signature)
+                            <div class="sig-name">{{ $tenant->company_name }}</div>
                         @endif
-                    </div>
-                    @if($receipt->include_signature)
-                        <div class="signature-name">{{ $tenant->company_name }}</div>
+                    </td>
+                </tr>
+            </table>
+
+            {{-- ===== FOOTER ===== --}}
+            <div class="footer-section">
+                <div class="footer-qr">
+                    @if($receipt->include_qr)
+                        <img src="data:image/svg+xml;base64, {!! base64_encode(SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(45)->generate(route('verify.receipt', $receipt->verification_code))) !!}" alt="QR">
                     @endif
                 </div>
-            </div>
-
-            <!-- Footer -->
-            <div class="footer" style="margin-top: 15px; border-top: 1px solid #ddd; padding-top: 10px;">
-                <table style="width: 100%;">
-                    <tr>
-                        <td style="text-align: right; width: 45%; padding-right: 15px; vertical-align: middle;">
-                            @if($receipt->include_qr)
-                                <img src="data:image/svg+xml;base64, {!! base64_encode(SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(60)->generate(route('verify.receipt', $receipt->verification_code))) !!}" alt="QR Verification">
-                            @endif
-                        </td>
-                        <td style="text-align: left; width: 55%; vertical-align: middle; font-size: 8pt; color: #999;">
-                            <p>Dokumen ini dibuat secara otomatis oleh sistem Paperly.</p>
-                            @if($receipt->include_qr)
-                                <p style="margin-top: 5px;">Kode Verifikasi: {{ $receipt->receipt_number }}</p>
-                                <p style="margin-top: 5px;">Link Verifikasi: {{ route('verify.receipt', $receipt->verification_code) }}</p>
-                            @endif
-                        </td>
-                    </tr>
-                </table>
+                <div class="footer-text">
+                    Dokumen ini dibuat secara otomatis oleh sistem {{ config('app.name') }}.
+                    @if($receipt->include_qr)
+                        <br>Verifikasi: {{ route('verify.receipt', $receipt->verification_code) }}
+                    @endif
+                </div>
             </div>
         </div>
     </div>
