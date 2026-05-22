@@ -409,7 +409,7 @@
                                 style="text-align: right; font-weight: bold; color: #1e40af; padding-top: 12px; font-size: 14px;">
                                 Rp {{ number_format($invoice->total, 0, ',', '.') }}</td>
                         </tr>
-                        @if($invoice->amount_paid > 0)
+                        @if($invoice->amount_paid > 0 && $invoice->amount_due > 0)
                             <tr>
                                 <td style="color: #666; padding: 8px 0;">Sudah Dibayar</td>
                                 <td style="text-align: right; font-weight: 500; color: #059669;">Rp
