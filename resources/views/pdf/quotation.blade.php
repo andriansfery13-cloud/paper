@@ -1,10 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <title>Quotation {{ $quotation->quotation_number }}</title>
+    @php
+        use SimpleSoftwareIO\QrCode\Facades\QrCode;
+    @endphp
     <style>
+        @page {
+            margin: 30px 40px;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -14,133 +21,553 @@
         body {
             font-family: 'Helvetica Neue', Arial, sans-serif;
             font-size: 12px;
-            color: #333;
+            color: #334155;
             line-height: 1.5;
+            background: #ffffff;
         }
 
         .container {
-            padding: 30px;
+            width: 100%;
         }
 
-        .status-badge {
+        /* =========================
+            HEADER
+        ========================= */
+        .top-header {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+        .top-header td {
+            vertical-align: top;
+        }
+
+        .company-section {
+            width: 60%;
+        }
+
+        .document-section {
+            width: 40%;
+            text-align: right;
+        }
+
+        .logo {
+            max-height: 70px;
+            max-width: 200px;
+            object-fit: contain;
+            margin-bottom: 10px;
+        }
+
+        .company-name {
+            font-size: 22px;
+            font-weight: bold;
+            color: #0f172a;
+            margin-bottom: 5px;
+        }
+
+        .company-detail {
+            color: #64748b;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .quotation-title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #0284c7; /* Biru Profesional */
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .quotation-number {
+            font-size: 14px;
+            font-weight: bold;
+            color: #334155;
+            margin-bottom: 10px;
+        }
+
+        .status {
             display: inline-block;
-            padding: 5px 15px;
-            border-radius: 20px;
+            padding: 5px 12px;
+            border-radius: 4px;
             font-size: 11px;
             font-weight: bold;
+            letter-spacing: 1px;
             text-transform: uppercase;
         }
 
         .status-approved {
-            background-color: #d1fae5;
-            color: #065f46;
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
         }
 
         .status-pending {
-            background-color: #fef3c7;
-            color: #92400e;
+            background: #fef9c3;
+            color: #854d0e;
+            border: 1px solid #fef08a;
+        }
+        
+        .status-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
         }
 
+        .blue-line {
+            height: 4px;
+            background: #0284c7;
+            margin-top: 15px;
+            margin-bottom: 25px;
+        }
+
+        /* =========================
+            CLIENT + INFO (BOXES)
+        ========================= */
+        .info-wrapper {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+        }
+
+        .info-wrapper td {
+            vertical-align: top;
+        }
+
+        .client-card,
+        .detail-card {
+            border: 1px solid #bae6fd;
+            background: #f0f9ff;
+            padding: 15px;
+            border-radius: 6px; 
+        }
+
+        .client-card {
+            width: 55%;
+        }
+
+        .detail-card {
+            width: 40%;
+        }
+
+        .spacer {
+            width: 5%;
+        }
+
+        .section-title {
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #0284c7;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #bae6fd;
+            padding-bottom: 5px;
+        }
+
+        .client-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #0f172a;
+            margin-bottom: 5px;
+        }
+
+        .client-detail {
+            color: #475569;
+            line-height: 1.5;
+            font-size: 11px;
+        }
+
+        .detail-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .detail-table td {
+            padding: 4px 0;
+            font-size: 11px;
+        }
+
+        .detail-table td:first-child {
+            color: #64748b;
+        }
+
+        .detail-table td:last-child {
+            text-align: right;
+            font-weight: bold;
+            color: #0f172a;
+        }
+
+        /* =========================
+            SUBJECT
+        ========================= */
+        .subject-box {
+            background: #f8fafc;
+            border-left: 4px solid #0284c7;
+            border-top: 1px solid #e2e8f0;
+            border-right: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 12px 15px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+        }
+
+        .subject-label {
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #64748b;
+            margin-bottom: 4px;
+        }
+
+        .subject-text {
+            font-size: 13px;
+            font-weight: bold;
+            color: #0f172a;
+        }
+
+        /* =========================
+            TABLE
+        ========================= */
         .items-table {
             width: 100%;
             border-collapse: collapse;
+            margin-bottom: 25px;
+        }
+
+        .items-table thead th {
+            background: #0284c7;
+            color: #ffffff;
+            padding: 10px;
+            font-size: 11px;
+            text-transform: uppercase;
+            border: 1px solid #0284c7;
+            text-align: left;
+        }
+
+        .items-table tbody td {
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            color: #334155;
+            vertical-align: top;
+            font-size: 11px;
+        }
+
+        .items-table tbody tr:nth-child(even) {
+            background: #f8fafc;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        /* =========================
+            TOTAL
+        ========================= */
+        .total-wrapper {
+            width: 100%;
             margin-bottom: 30px;
         }
 
-        .items-table th {
-            background-color: #8b5cf6;
-            color: white;
-            padding: 12px;
-            text-align: left;
+        .total-box {
+            width: 300px;
+            float: right;
+            border: 1px solid #bae6fd;
+            border-radius: 6px;
+            background: #f0f9ff;
+        }
+
+        .total-box table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .total-box td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #bae6fd;
             font-size: 11px;
+        }
+
+        .total-box tr:last-child td {
+            border-bottom: none;
+        }
+
+        .total-box td:first-child {
+            color: #475569;
+            font-weight: bold;
+        }
+
+        .total-box td:last-child {
+            text-align: right;
+            font-weight: bold;
+            color: #0f172a;
+        }
+
+        .grand-total {
+            background: #0284c7;
+        }
+
+        .grand-total td {
+            color: #ffffff !important;
+            font-size: 14px !important;
+        }
+
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+
+        /* =========================
+            NOTES
+        ========================= */
+        .notes-wrapper {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 30px;
+            clear: both;
+        }
+
+        .notes-block {
+            margin-bottom: 15px;
+        }
+
+        .notes-block:last-child {
+            margin-bottom: 0;
+        }
+
+        .notes-title {
+            font-size: 11px;
+            font-weight: bold;
+            color: #0284c7;
+            margin-bottom: 5px;
             text-transform: uppercase;
         }
 
-        .items-table th:last-child,
-        .items-table th:nth-child(3),
-        .items-table th:nth-child(4),
-        .items-table th:nth-child(5) {
-            text-align: right;
+        .notes-content {
+            color: #475569;
+            line-height: 1.5;
+            font-size: 11px;
         }
 
-        .items-table td {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
+        /* =========================
+            FOOT SECTION
+        ========================= */
+        .bottom-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
         }
 
-        .items-table td:last-child,
-        .items-table td:nth-child(3),
-        .items-table td:nth-child(4),
-        .items-table td:nth-child(5) {
-            text-align: right;
+        .bottom-table td {
+            vertical-align: top;
         }
 
-        .items-table tr:nth-child(even) {
-            background-color: #f9fafb;
+        /* QR */
+        .qr-box {
+            width: 180px;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            border-radius: 6px;
+            padding: 15px;
+            text-align: center;
         }
+
+        .qr-title {
+            font-size: 10px;
+            font-weight: bold;
+            color: #64748b;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .qr-box img {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 10px;
+        }
+
+        .qr-code {
+            font-size: 11px;
+            font-weight: bold;
+            color: #0f172a;
+        }
+
+        .qr-text {
+            margin-top: 5px;
+            color: #64748b;
+            font-size: 9px;
+            line-height: 1.4;
+        }
+
+        /* SIGNATURE */
+        .signature-wrapper {
+            width: 250px;
+            float: right;
+            text-align: center;
+        }
+
+        .signature-date {
+            color: #475569;
+            margin-bottom: 5px;
+            font-size: 11px;
+        }
+
+        .signature-company {
+            font-weight: bold;
+            color: #0f172a;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+
+        .signature-area {
+            position: relative;
+            height: 100px;
+            margin-bottom: 5px;
+        }
+
+        .stamp-image {
+            position: absolute;
+            left: 50%;
+            top: 5px;
+            transform: translateX(-50%);
+            height: 85px;
+            opacity: 0.75;
+            z-index: 1;
+        }
+
+        .signature-image {
+            position: absolute;
+            left: 50%;
+            top: 10px;
+            transform: translateX(-50%);
+            height: 80px;
+            z-index: 2;
+        }
+
+        .signature-line {
+            border-top: 1px solid #94a3b8;
+            padding-top: 5px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .signature-name {
+            font-size: 12px;
+            font-weight: bold;
+            color: #0f172a;
+        }
+
+        .signature-role {
+            color: #64748b;
+            font-size: 10px;
+        }
+
+        /* =========================
+            FOOTER
+        ========================= */
+        .footer {
+            margin-top: 40px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 10px;
+            line-height: 1.5;
+            clear: both;
+        }
+
     </style>
 </head>
 
 <body>
+
     <div class="container">
-        <table style="width: 100%; margin-bottom: 30px; border-bottom: 2px solid #8b5cf6; padding-bottom: 20px;">
+
+        <!-- HEADER -->
+        <table class="top-header">
             <tr>
-                <td style="width: 60%; vertical-align: top;">
-                    <!-- Logo Section -->
+                <td class="company-section">
                     @if($quotation->tenant->logo && file_exists(public_path('storage/' . $quotation->tenant->logo)))
-                        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('storage/' . $quotation->tenant->logo))) }}"
-                            style="height: 60px; margin-bottom: 10px; max-width: 200px; object-fit: contain;">
+                        <img class="logo"
+                            src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('storage/' . $quotation->tenant->logo))) }}">
                     @else
-                        <h1 style="font-size: 24px; color: #7c3aed; margin-bottom: 5px;">
+                        <div class="company-name">
                             {{ $quotation->tenant->company_name }}
-                        </h1>
+                        </div>
+                    @endif
+                    
+                    @if($quotation->tenant->logo)
+                        <div class="company-name" style="font-size: 14px; margin-top: 5px;">
+                            {{ $quotation->tenant->company_name }}
+                        </div>
                     @endif
 
-                    @if($quotation->tenant->logo) <!-- If logo exists, render company name smaller -->
-                        <p style="font-weight: bold; font-size: 14px; margin-bottom: 5px;">
-                            {{ $quotation->tenant->company_name }}
-                        </p>
-                    @endif
-
-                    <p style="color: #666; font-size: 11px;">{{ $quotation->tenant->address }}</p>
-                    <p style="color: #666; font-size: 11px;">{{ $quotation->tenant->city }},
-                        {{ $quotation->tenant->province }}
-                    </p>
-                    <p style="color: #666; font-size: 11px;">Tel: {{ $quotation->tenant->phone }}</p>
+                    <div class="company-detail">
+                        {{ $quotation->tenant->address }}<br>
+                        {{ $quotation->tenant->city }}, {{ $quotation->tenant->province }} {{ $quotation->tenant->postal_code }}<br>
+                        Telp: {{ $quotation->tenant->phone }} | Email: {{ $quotation->tenant->email }}
+                        @if($quotation->tenant->npwp)
+                            <br>NPWP: {{ $quotation->tenant->npwp }}
+                        @endif
+                    </div>
                 </td>
-                <td style="width: 40%; text-align: right; vertical-align: top;">
-                    <h2 style="font-size: 28px; color: #7c3aed; text-transform: uppercase;">QUOTATION</h2>
-                    <p style="font-size: 14px; color: #333; margin-top: 5px;">{{ $quotation->quotation_number }}</p>
-                    <span
-                        class="status-badge {{ $quotation->status == 'approved' ? 'status-approved' : 'status-pending' }}">
+                <td class="document-section">
+                    <div class="quotation-title">
+                        QUOTATION
+                    </div>
+                    <div class="quotation-number">
+                        #{{ $quotation->quotation_number }}
+                    </div>
+                    <span class="status {{ $quotation->status == 'approved' ? 'status-approved' : ($quotation->status == 'rejected' ? 'status-rejected' : 'status-pending') }}">
                         {{ strtoupper($quotation->status) }}
                     </span>
                 </td>
             </tr>
         </table>
 
-        <table style="width: 100%; margin-bottom: 30px;">
+        <div class="blue-line"></div>
+
+        <!-- CLIENT & DETAILS -->
+        <table class="info-wrapper">
             <tr>
-                <td style="width: 50%; vertical-align: top;">
-                    <p style="font-size: 10px; text-transform: uppercase; color: #999; margin-bottom: 5px;">Kepada:</p>
-                    <p style="font-size: 14px; font-weight: bold; margin-bottom: 5px;">{{ $quotation->client->name }}
-                    </p>
-                    <p style="color: #666; font-size: 11px;">{{ $quotation->client->address }}</p>
-                    <p style="color: #666; font-size: 11px;">{{ $quotation->client->city }},
+                <td class="client-card">
+                    <div class="section-title">
+                        Ditujukan Kepada
+                    </div>
+                    <div class="client-name">
+                        {{ $quotation->client->name }}
+                    </div>
+                    <div class="client-detail">
+                        {{ $quotation->client->address }}<br>
+                        {{ $quotation->client->city }},
                         {{ $quotation->client->province }}
-                    </p>
+                        @if($quotation->client->npwp)
+                            <br>NPWP: {{ $quotation->client->npwp }}
+                        @endif
+                    </div>
                 </td>
-                <td style="width: 50%; text-align: right; vertical-align: top;">
-                    <table style="width: 100%;">
+                <td class="spacer"></td>
+                <td class="detail-card">
+                    <div class="section-title">
+                        Detail Quotation
+                    </div>
+                    <table class="detail-table">
                         <tr>
-                            <td style="color: #666; padding: 3px 0;">Tanggal:</td>
-                            <td style="text-align: right; font-weight: 500;">
-                                {{ $quotation->quotation_date->format('d M Y') }}
-                            </td>
+                            <td>Tanggal Dokumen</td>
+                            <td>{{ $quotation->quotation_date->format('d M Y') }}</td>
                         </tr>
                         <tr>
-                            <td style="color: #666; padding: 3px 0;">Berlaku Sampai:</td>
-                            <td style="text-align: right; font-weight: 500;">
+                            <td>Berlaku Sampai</td>
+                            <td style="color: {{ $quotation->valid_until < now() && $quotation->status == 'pending' ? '#dc2626' : '#0f172a' }}">
                                 {{ $quotation->valid_until->format('d M Y') }}
                             </td>
                         </tr>
@@ -149,138 +576,179 @@
             </tr>
         </table>
 
+        <!-- SUBJECT -->
         @if($quotation->subject)
-            <p style="margin-bottom: 20px;"><strong>Perihal:</strong> {{ $quotation->subject }}</p>
+        <div class="subject-box">
+            <div class="subject-label">
+                Perihal
+            </div>
+            <div class="subject-text">
+                {{ $quotation->subject }}
+            </div>
+        </div>
         @endif
 
+        <!-- ITEMS TABLE -->
         <table class="items-table">
             <thead>
                 <tr>
-                    <th style="width: 5%;">No</th>
-                    <th style="width: 40%;">Deskripsi</th>
-                    <th style="width: 10%;">Qty</th>
-                    <th style="width: 15%;">Harga</th>
-                    <th style="width: 10%;">Pajak</th>
-                    <th style="width: 20%;">Subtotal</th>
+                    <th width="5%" class="text-center">No</th>
+                    <th width="40%">Deskripsi</th>
+                    <th width="10%" class="text-right">Qty</th>
+                    <th width="20%" class="text-right">Harga Satuan</th>
+                    <th width="10%" class="text-right">Pajak</th>
+                    <th width="15%" class="text-right">Subtotal</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($quotation->items as $index => $item)
-                    <tr>
-                        <td>{{ $index + 1 }}</td>
-                        <td>{{ $item->description }}</td>
-                        <td style="text-align: right;">{{ number_format($item->quantity, 0) }} {{ $item->unit }}</td>
-                        <td style="text-align: right;">Rp {{ number_format($item->unit_price, 0, ',', '.') }}</td>
-                        <td style="text-align: right;">{{ number_format($item->tax_percent, 0) }}%</td>
-                        <td style="text-align: right;">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</td>
-                    </tr>
+                <tr>
+                    <td class="text-center">
+                        {{ $index + 1 }}
+                    </td>
+                    <td>
+                        {{ $item->description }}
+                    </td>
+                    <td class="text-right">
+                        {{ number_format($item->quantity, 0) }}
+                        {{ $item->unit }}
+                    </td>
+                    <td class="text-right">
+                        Rp {{ number_format($item->unit_price, 0, ',', '.') }}
+                    </td>
+                    <td class="text-right">
+                        {{ number_format($item->tax_percent, 0) }}%
+                    </td>
+                    <td class="text-right">
+                        Rp {{ number_format($item->subtotal, 0, ',', '.') }}
+                    </td>
+                </tr>
                 @endforeach
             </tbody>
         </table>
 
-        <table style="width: 100%;">
-            <tr>
-                <td style="width: 60%;"></td>
-                <td style="width: 40%;">
-                    <table style="width: 100%;">
-                        <tr>
-                            <td style="color: #666; padding: 8px 0;">Subtotal</td>
-                            <td style="text-align: right; font-weight: 500;">Rp
-                                {{ number_format($quotation->subtotal, 0, ',', '.') }}
-                            </td>
-                        </tr>
-                        @if($quotation->discount_amount > 0)
-                            <tr>
-                                <td style="color: #666; padding: 8px 0;">Diskon</td>
-                                <td style="text-align: right; font-weight: 500; color: #dc2626;">- Rp
-                                    {{ number_format($quotation->discount_amount, 0, ',', '.') }}
-                                </td>
-                            </tr>
-                        @endif
-                        <tr>
-                            <td style="color: #666; padding: 8px 0;">PPN</td>
-                            <td style="text-align: right; font-weight: 500;">Rp
-                                {{ number_format($quotation->tax_amount, 0, ',', '.') }}
-                            </td>
-                        </tr>
-                        <tr style="border-top: 2px solid #333;">
-                            <td style="font-weight: bold; color: #7c3aed; padding-top: 12px; font-size: 14px;">Total
-                            </td>
-                            <td
-                                style="text-align: right; font-weight: bold; color: #7c3aed; padding-top: 12px; font-size: 14px;">
-                                Rp {{ number_format($quotation->total, 0, ',', '.') }}</td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
-
-        @if($quotation->notes || $quotation->terms)
-            <div style="margin-top: 30px; padding: 15px; background-color: #f3f4f6; border-radius: 8px;">
-                @if($quotation->notes)
-                    <div style="margin-bottom: 15px;">
-                        <h3 style="font-size: 11px; text-transform: uppercase; color: #666; margin-bottom: 8px;">Catatan</h3>
-                        <p style="color: #333; font-size: 11px;">{{ $quotation->notes }}</p>
-                    </div>
-                @endif
-                @if($quotation->terms)
-                    <div>
-                        <h3 style="font-size: 11px; text-transform: uppercase; color: #666; margin-bottom: 8px;">Syarat &
-                            Ketentuan</h3>
-                        <p style="color: #333; font-size: 11px;">{{ $quotation->terms }}</p>
-                    </div>
-                @endif
+        <!-- TOTAL -->
+        <div class="total-wrapper clearfix">
+            <div class="total-box">
+                <table>
+                    <tr>
+                        <td>Subtotal</td>
+                        <td>Rp {{ number_format($quotation->subtotal, 0, ',', '.') }}</td>
+                    </tr>
+                    @if($quotation->discount_amount > 0)
+                    <tr>
+                        <td>Diskon</td>
+                        <td style="color: #dc2626;">- Rp {{ number_format($quotation->discount_amount, 0, ',', '.') }}</td>
+                    </tr>
+                    @endif
+                    <tr>
+                        <td>PPN</td>
+                        <td>Rp {{ number_format($quotation->tax_amount, 0, ',', '.') }}</td>
+                    </tr>
+                    <tr class="grand-total">
+                        <td>TOTAL</td>
+                        <td>Rp {{ number_format($quotation->total, 0, ',', '.') }}</td>
+                    </tr>
+                </table>
             </div>
+        </div>
+
+        <!-- NOTES -->
+        @if($quotation->notes || $quotation->terms)
+        <div class="notes-wrapper">
+            @if($quotation->notes)
+            <div class="notes-block">
+                <div class="notes-title">
+                    Catatan
+                </div>
+                <div class="notes-content">
+                    {{ $quotation->notes }}
+                </div>
+            </div>
+            @endif
+
+            @if($quotation->terms)
+            <div class="notes-block">
+                <div class="notes-title">
+                    Syarat & Ketentuan
+                </div>
+                <div class="notes-content">
+                    {{ $quotation->terms }}
+                </div>
+            </div>
+            @endif
+        </div>
         @endif
 
-        <table style="width: 100%; margin-top: 50px;">
+        <!-- QR + SIGNATURE -->
+        <table class="bottom-table">
             <tr>
-                <td style="width: 60%; vertical-align: top;">
+                <td style="width: 50%;">
                     @if($quotation->include_qr)
-                        <div style="color: #666; font-size: 10px;">
-                            <p style="margin-bottom: 5px;">Scan barcode untuk verifikasi keaslian dokumen:</p>
-                            <img src="data:image/svg+xml;base64, {!! base64_encode(SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(80)->generate(route('verify.quotation', $quotation->verification_code))) !!}"
-                                alt="QR Verification">
-                            <p style="margin-top: 5px;">Kode: <strong>{{ $quotation->quotation_number }}</strong></p>
+                    <div class="qr-box">
+                        <div class="qr-title">
+                            Verifikasi Dokumen
                         </div>
+                        <img src="data:image/svg+xml;base64,{!! base64_encode(
+                            QrCode::format('svg')
+                            ->size(80)
+                            ->generate(route('verify.quotation', $quotation->verification_code ?? $quotation->quotation_number))
+                        ) !!}">
+                        <div class="qr-code">
+                            {{ $quotation->quotation_number }}
+                        </div>
+                        <div class="qr-text">
+                            Scan barcode untuk verifikasi keaslian dokumen quotation ini.
+                        </div>
+                    </div>
                     @endif
                 </td>
-                <td style="width: 40%; text-align: center; vertical-align: top;">
-                    <p style="margin-bottom: 5px; font-size: 11px;">{{ $quotation->tenant->city }},
-                        {{ $quotation->quotation_date->format('d M Y') }}
-                    </p>
-                    <p style="font-weight: bold; margin-bottom: 20px; font-size: 11px;">
-                        {{ $quotation->tenant->company_name }}
-                    </p>
+                <td style="width: 50%;">
+                    <div class="signature-wrapper">
+                        <div class="signature-date">
+                            {{ $quotation->tenant->city }},
+                            {{ $quotation->quotation_date->format('d F Y') }}
+                        </div>
+                        <div class="signature-company">
+                            {{ $quotation->tenant->company_name }}
+                        </div>
 
-                    <div style="position: relative; height: 90px; width: 100%; margin-bottom: 10px;">
-                        @if($quotation->include_stamp && $quotation->tenant->stamp_image && file_exists(public_path('storage/' . $quotation->tenant->stamp_image)))
-                            <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('storage/' . $quotation->tenant->stamp_image))) }}"
-                                style="height: 80px; position: absolute; top: 0; left: 50%; transform: translateX(-50%); z-index: 1; opacity: 0.8;">
-                        @endif
+                        <div class="signature-area">
+                            @if($quotation->include_stamp && $quotation->tenant->stamp_image && file_exists(public_path('storage/' . $quotation->tenant->stamp_image)))
+                                <img class="stamp-image"
+                                    src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('storage/' . $quotation->tenant->stamp_image))) }}">
+                            @endif
 
-                        @if($quotation->include_signature && $quotation->tenant->signature_image && file_exists(public_path('storage/' . $quotation->tenant->signature_image)))
-                            <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('storage/' . $quotation->tenant->signature_image))) }}"
-                                style="height: 80px; position: absolute; top: 0; left: 50%; transform: translateX(-50%); z-index: 2;">
-                        @endif
+                            @if($quotation->include_signature && $quotation->tenant->signature_image && file_exists(public_path('storage/' . $quotation->tenant->signature_image)))
+                                <img class="signature-image"
+                                    src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('storage/' . $quotation->tenant->signature_image))) }}">
+                            @endif
+                        </div>
+
+                        <div class="signature-line">
+                            <div class="signature-name">
+                                @if($quotation->include_signature)
+                                    {{ $quotation->creator->name ?? 'Admin' }}
+                                @endif
+                            </div>
+                            <div class="signature-role">
+                                Authorized Signature
+                            </div>
+                        </div>
                     </div>
-
-                    <p style="font-size: 11px; text-decoration: underline; font-weight: bold;">
-                        {{ $quotation->creator->name ?? 'Admin' }}
-                    </p>
-                    <p style="font-size: 10px;">Authorized Signature</p>
                 </td>
             </tr>
         </table>
 
-        <div
-            style="margin-top: 30px; text-align: center; color: #999; font-size: 10px; border-top: 1px solid #eee; padding-top: 20px;">
-            <p>Dokumen ini dibuat secara otomatis oleh sistem Paperly.</p>
-            <p style="margin-top: 5px;">Kode Verifikasi: {{ $quotation->quotation_number }}</p>
-            <p style="margin-top: 5px;">Link Verifikasi: {{ route('verify.quotation', $quotation->verification_code) }}
-            </p>
+        <!-- FOOTER -->
+        <div class="footer">
+            Dokumen ini dibuat secara otomatis oleh sistem {{ config('app.name') }}.<br>
+            @if($quotation->include_qr)
+            Link Verifikasi: {{ route('verify.quotation', $quotation->verification_code ?? $quotation->quotation_number) }}
+            @endif
         </div>
-    </div>
-</body>
 
+    </div>
+
+</body>
 </html>
